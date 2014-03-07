@@ -4,29 +4,42 @@ BASEDIR =  $$quote($$_PRO_FILE_PWD_)
 device {
     CONFIG(debug, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.cpp)
 
-        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp)
+        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.h) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.h)
     }
 
     CONFIG(release, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.cpp)
 
-        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp)
+        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.h) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.h)
     }
 }
 
 simulator {
     CONFIG(debug, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.cpp) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.cpp)
 
-        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp)
+        HEADERS +=  $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/quest/QuestData.h) \
+                 $$quote($$BASEDIR/src/quest/QuestMap.h)
     }
 }
 
-INCLUDEPATH +=  $$quote($$BASEDIR/src)
+INCLUDEPATH +=  $$quote($$BASEDIR/src/quest) \
+         $$quote($$BASEDIR/src)
 
 CONFIG += precompile_header
 
@@ -38,6 +51,11 @@ lupdate_inclusion {
              $$quote($$BASEDIR/../src/*.cc) \
              $$quote($$BASEDIR/../src/*.cpp) \
              $$quote($$BASEDIR/../src/*.cxx) \
+             $$quote($$BASEDIR/../src/quest/*.c) \
+             $$quote($$BASEDIR/../src/quest/*.c++) \
+             $$quote($$BASEDIR/../src/quest/*.cc) \
+             $$quote($$BASEDIR/../src/quest/*.cpp) \
+             $$quote($$BASEDIR/../src/quest/*.cxx) \
              $$quote($$BASEDIR/../assets/*.qml) \
              $$quote($$BASEDIR/../assets/*.js) \
              $$quote($$BASEDIR/../assets/*.qs)

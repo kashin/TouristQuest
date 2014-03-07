@@ -5,8 +5,7 @@ import bb.cascades.maps 1.0
 TabbedPane {
     showTabsOnActionBar: true
     Tab { //First tab
-        // Localized text with the dynamic translation and locale updates support
-        title: qsTr("Track Quest") + Retranslate.onLocaleOrLanguageChanged
+        title: qsTr("Peek quest") + Retranslate.onLocaleOrLanguageChanged
         Page {
             Container {
                 Button {
@@ -14,6 +13,15 @@ TabbedPane {
                     onClicked: {
                     }
                 }
+            }
+        }
+    } //End of first tab
+
+    Tab { //Second tab
+        // Localized text with the dynamic translation and locale updates support
+        title: qsTr("Track Quest") + Retranslate.onLocaleOrLanguageChanged
+        Page {
+            Container {
                 MapView {
                     id: mapView
                     horizontalAlignment: HorizontalAlignment.Fill
@@ -22,15 +30,6 @@ TabbedPane {
                 }
             }
         }
-    } //End of first tab
-    Tab { //Second tab
-        title: qsTr("Quest description") + Retranslate.onLocaleOrLanguageChanged
-        Page {
-            Container {
-                Label {
-                    text: qsTr("Second tab") + Retranslate.onLocaleOrLanguageChanged
-                }
-            }
-        }
-    } //End of second tab
+    } //End of Second tab
+
 }
