@@ -1,4 +1,3 @@
-
 import bb.cascades 1.2
 import bb.cascades.maps 1.0
 import mobile.quest 1.0
@@ -32,13 +31,10 @@ TabbedPane {
                 Button {
                     text: "load data"
                     onClicked: {
-                        statusLabel3.text = "start"
-                        questData.name = "test"
-                        statusLabel3.text = "2"
+                        statusLabel3.text = questData.name
+                        questData.questID = "1"
                         statusLabel2.text = "questDataName=" + questData.name
-                        statusLabel3.text = "3"
-                        statusLabel.text += questData.questID
-                        statusLabel3.text = "4"
+                        statusLabel.text = "questID=" + questData.questID
                     }
                 }
                 Label {
@@ -60,6 +56,8 @@ TabbedPane {
                     longitude: 44.0*/
                     questData: QuestData {
                         id: questData
+                        name: "new"
+                        questID: "2"
                     }
                 }
             }

@@ -4,12 +4,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../assets/main.qml" line="9"/>
+        <location filename="../assets/main.qml" line="8"/>
         <source>Peek quest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="23"/>
+        <location filename="../assets/main.qml" line="22"/>
         <source>Track Quest</source>
         <translation type="unfinished"></translation>
     </message>

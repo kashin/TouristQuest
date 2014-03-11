@@ -18,6 +18,7 @@ static const QString QUESTS_FOLDER = "quests/";
 
 static const QString QUEST_ID_XML_NAME = "ID";
 static const QString QUEST_NAME_XML_NAME = "Name";
+static const QString QUEST_FILES_DIR_PATH = QDir::currentPath() + QString("/data/") + QUESTS_FOLDER;
 
 QuestData::QuestData(QObject* parent)
 : MapData(parent)
@@ -30,18 +31,22 @@ QuestData::~QuestData()
 
 void QuestData::setName(const QString& newName)
 {
-	if (!mQuestName.compare(newName))
+	if (mQuestName.compare(newName) != 0)
 	{
 		mQuestName = newName;
 		emit nameChanged(mQuestName);
-		QStringList fileNames = findQuestFilesAndDirsByName(mQuestName);
-		if (fileNames.isEmpty())
-		{
-			qDebug() << "QuestData::setName: no xml file is found for name=" << mQuestName;
-		}
-		else if (fileNames.count() == 1)
+		QStringList fileNames = findQuestFilesAndDirsByName(QString('*') + mQuestName);
+		if (fileNames.count() == 1)
 		{
 			loadDataFromFile(fileNames.first());
+			QStringList tmpList = fileNames.first().split('_');
+			mQuestID = tmpList.first();
+		}
+		else
+		{
+			qDebug() << "QuestData::setName: no xml file is found for name=" << mQuestName;
+			// clear quest ID if name is changed
+			setQuestID("");
 		}
 	}
 }
@@ -53,11 +58,14 @@ QString QuestData::name() const
 
 void QuestData::setQuestID(const QString& newQuestID)
 {
-	if (!mQuestID.compare(newQuestID))
+	if (mQuestID.compare(newQuestID) != 0)
 	{
 		mQuestID = newQuestID;
 		emit questIDChanged(mQuestID);
-		loadDataByQuestID(mQuestID);
+		if (!mQuestID.isEmpty())
+		{
+			loadDataByQuestID(mQuestID);
+		}
 	}
 }
 
@@ -70,27 +78,45 @@ void QuestData::saveQuest()
 {
 	if (mFileName.isEmpty())
 	{
+		if (mQuestID.isEmpty())
+		{
+			// TODO: generate quest ID
+			mQuestID = "1";
+		}
 		mFileName = mQuestID + QString('_') + mQuestName + QString(".xml");
 	}
-	QFile file(mFileName);
-	file.open(QIODevice::WriteOnly);
-
-	QXmlStreamWriter xmlWriter(&file);
-	xmlWriter.setAutoFormatting(true);
-
-	xmlWriter.writeStartDocument();
+	QString path = QUEST_FILES_DIR_PATH;
+	QDir dir(path);
+	if (!dir.exists())
 	{
-
-		xmlWriter.writeStartElement("QuestDescription");
-		{
-			xmlWriter.writeTextElement(QUEST_ID_XML_NAME, mQuestID );
-			xmlWriter.writeTextElement(QUEST_NAME_XML_NAME, mQuestName);
-		}
-		xmlWriter.writeEndElement();
+		qDebug() << "dir was not exist" << "created path=" << path << dir.mkpath(path);
+		dir.cd(path);
 	}
-	xmlWriter.writeEndDocument();
 
-	file.close();
+	QFile file(dir.absoluteFilePath(mFileName));
+	if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	{
+		QXmlStreamWriter xmlWriter(&file);
+		xmlWriter.setAutoFormatting(true);
+
+		xmlWriter.writeStartDocument();
+		{
+
+			xmlWriter.writeStartElement("QuestDescription");
+			{
+				xmlWriter.writeTextElement(QUEST_ID_XML_NAME, mQuestID );
+				xmlWriter.writeTextElement(QUEST_NAME_XML_NAME, mQuestName);
+			}
+			xmlWriter.writeEndElement();
+		}
+		xmlWriter.writeEndDocument();
+
+		file.close();
+	}
+	else
+	{
+		qWarning() << "QuestData::saveQuest: can't open file" << file.fileName() << "; error:" << file.error();
+	}
 }
 
 bool QuestData::isUniqueQuestName(const QString& name) const
@@ -98,7 +124,7 @@ bool QuestData::isUniqueQuestName(const QString& name) const
 	bool result = false;
 
 	QStringList foundFilesAndDirs = findQuestFilesAndDirsByName(QString("*") + name);
-    if (!foundFilesAndDirs.isEmpty())
+    if (foundFilesAndDirs.count() == 1)
     {
     	result = true;
     }
@@ -108,15 +134,15 @@ bool QuestData::isUniqueQuestName(const QString& name) const
 QStringList QuestData::findQuestFilesAndDirsByName(const QString& name) const
 {
     QStringList nameFilter(name +"*.xml");
-    QDir directory(QUESTS_FOLDER);
-    return directory.entryList(nameFilter);
+    QDir directory(QUEST_FILES_DIR_PATH);
+    return directory.entryList(nameFilter, QDir::Files);
 }
 
 void QuestData::loadDataFromFile(const QString& fileName)
 {
 	mFileName = fileName;
-	QFile file(mFileName);
-	qWarning() << "QuestData::loadDataFromFile: is called for file" << fileName;
+	QFile file(QUEST_FILES_DIR_PATH + mFileName);
+	qDebug() << file.fileName();
 	if (!file.open(QFile::ReadOnly | QFile::Text))
 	{
 			qWarning() << "QuestData::loadDataFromFile: can't load a file with name =" << mFileName;
@@ -153,10 +179,6 @@ void QuestData::loadDataFromFile(const QString& fileName)
 					}
 				}
 			}
-			else
-			{
-				qWarning() << "QuestData::loadDataFromFile: not a first element" ;
-			}
 			xmlReader.readNext();
 		}
 	}
@@ -172,6 +194,13 @@ void QuestData::loadDataByQuestID(const QString& questID)
 	else if (foundFiles.count() == 1)
 	{
 		loadDataFromFile(foundFiles.first());
+		QStringList tmpList = foundFiles.first().split('_');
+		if (tmpList.count() > 1 )
+		{
+			QString tmpStr = tmpList.at(1);
+			tmpList = tmpStr.split(QString(".xml"));
+			mQuestName = tmpList.first();
+		}
 	}
 	else
 	{
