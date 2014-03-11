@@ -21,24 +21,36 @@
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/LocaleHandler>
 
+#include "quest/QuestMap.h"
+#include "quest/QuestData.h"
+
 using namespace bb::cascades;
 
 ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
         QObject(app)
 {
-    // prepare the localization
+    QCoreApplication::setOrganizationName("MrDon");
+    QCoreApplication::setApplicationName("MobileQuest");
+
+	// prepare the localization
     m_pTranslator = new QTranslator(this);
     m_pLocaleHandler = new LocaleHandler(this);
 
     bool res = QObject::connect(m_pLocaleHandler, SIGNAL(systemLanguageChanged()), this, SLOT(onSystemLanguageChanged()));
     // This is only available in Debug builds
     Q_ASSERT(res);
-    // Since the variable is not used in the app, this is added to avoid a
-    // compiler warning
-    Q_UNUSED(res);
+
+    if (!res)
+    {
+    	qWarning() << "ApplicationUI: systemLanguageChanged signal is not connected";
+    }
 
     // initial load
     onSystemLanguageChanged();
+
+    // register new types
+    qmlRegisterType<QuestMap>("mobile.quest", 1, 0, "QuestMap");
+    qmlRegisterType<QuestData>("mobile.quest", 1, 0, "QuestData");
 
     // Create scene document from main.qml asset, the parent is set
     // to ensure the document gets destroyed properly at shut down.

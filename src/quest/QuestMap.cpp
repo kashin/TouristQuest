@@ -7,13 +7,33 @@
 
 #include "QuestMap.h"
 
-QuestMap::QuestMap(QuestData* data)
+using namespace bb::cascades;
+using namespace bb::cascades::maps;// too lazy to type this everywhere...
+
+QuestMap::QuestMap(Container* parent)
+: MapView(parent),
+  mQuestData(0)
 {
-	mQuestData = data;
-	mQuestData->setParent(this);
 }
 
 QuestMap::~QuestMap()
 {
 }
 
+QuestData* QuestMap::questData() const
+{
+	return mQuestData;
+}
+
+void QuestMap::setQuestData(QuestData* newData)
+{
+	if (mQuestData != newData)
+	{
+		if (mQuestData)
+		{
+			delete mQuestData;
+		}
+		mQuestData = newData;
+		emit questDataChanged(mQuestData);
+	}
+}

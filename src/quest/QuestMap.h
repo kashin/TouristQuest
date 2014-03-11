@@ -13,11 +13,19 @@
 #include "QuestData.h"
 
 class QuestMap: public bb::cascades::maps::MapView {
+	Q_OBJECT
 public:
-	/// @brief QuestMap owns a ref on a passed QuestData
-	/// and frees memory when QuestMap object is destroyed.
-	QuestMap(QuestData* data);
+	QuestMap(bb::cascades::Container* parent = 0);
 	virtual ~QuestMap();
+
+	Q_PROPERTY(QuestData* questData READ questData WRITE setQuestData NOTIFY questDataChanged)
+
+	QuestData* questData() const;
+	/// @brief QuestMap become a parent of a QuestData and it frees its memory when ever it need to do so.
+	void setQuestData(QuestData* newData);
+
+signals:
+	void questDataChanged(QuestData* newData);
 
 private:
 	QuestData* mQuestData;
